@@ -1,8 +1,9 @@
 import cors from "cors"
-import express from "express"
+import express, { Request, Response } from "express"
 // import { sampleProducts } from "./data"
 import dotenv from "dotenv"
 import mongoose from "mongoose"
+import path from "path"
 import { productRouter } from "./router/productRouter"
 import { seedRouter } from "./router/seedRouter"
 import { userRouter } from "./router/userRouter"
@@ -49,7 +50,14 @@ app.use("/api/keys", keyRouter)
 
 // app.post
 
-const PORT = 4000
+// const PORT = 4000
+app.use(express.static(path.join(__dirname, "../../frontend/src")))
+app.get("*", (req: Request, res: Response) =>
+  res.sendFile(path.join(__dirname, "../../frontend/src/index.html"))
+)
+
+const PORT: number = parseInt((process.env.PORT || "4000") as string, 10)
+
 app.listen(PORT, () => {
   console.log(`server started at http://localhost:${PORT}`)
 })
