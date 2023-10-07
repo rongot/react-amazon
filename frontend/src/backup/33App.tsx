@@ -1,25 +1,28 @@
 import { useContext, useEffect, useState } from "react"
+import "./index.css"
+// import { sampleProducts } from "./data/data"
+import { LinkContainer } from "react-router-bootstrap"
 import {
   Button,
   Container,
   ListGroup,
   Nav,
-  Navbar,
   NavDropdown,
+  Navbar,
 } from "react-bootstrap"
 import { Link, Outlet } from "react-router-dom"
-import { LinkContainer } from "react-router-bootstrap"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { Store } from "./Store"
 import { useGetCategoriesQuery } from "./contexts/productHooks"
+import SearchBox from "./components/SearchBox"
 import LoadingBox from "./components/LoadingBox"
 import MessageBox from "./components/MessageBox"
 import { getError } from "./utils"
 import { ApiError } from "./types/ApiError"
-import SearchBox from "./components/SearchBox"
 
 function App() {
+  //get from store
   const {
     state: { mode, cart, userInfo },
     dispatch,
@@ -32,23 +35,23 @@ function App() {
   const switchModeHandler = () => {
     dispatch({ type: "SWITCH_MODE" })
   }
+
   const signoutHandler = () => {
     dispatch({ type: "USER_SIGNOUT" })
     localStorage.removeItem("userInfo")
     localStorage.removeItem("cartItems")
     localStorage.removeItem("shippingAddress")
     localStorage.removeItem("paymentMethod")
+    //redirect to /signin
     window.location.href = "/signin"
   }
-
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false)
-
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { data: categories, isLoading, error } = useGetCategoriesQuery()
-
   return (
     <div className="d-flex flex-column vh-100">
-      <ToastContainer position="bottom-center" limit={1} />
       <header>
+        <ToastContainer position="bottom-center" limit={1} />
         <Navbar
           className="d-flex flex-column align-items-stretch p-2 pb-0 mb-3"
           bg="dark"
@@ -57,7 +60,7 @@ function App() {
         >
           <div className="d-flex justify-content-between align-items-center">
             <LinkContainer to="/" className="header-link">
-              <Navbar.Brand>amazon</Navbar.Brand>
+              <Navbar.Brand>Ronen amazon</Navbar.Brand>
             </LinkContainer>
             <SearchBox />
 
@@ -73,7 +76,6 @@ function App() {
                   ></i>{" "}
                   {mode === "light" ? "Light" : "Dark"}
                 </Link>
-
                 {userInfo ? (
                   <NavDropdown
                     className="header-link"
@@ -129,7 +131,7 @@ function App() {
               <Link
                 to="#"
                 className="nav-link header-link p-1"
-                onClick={() => setSidebarIsOpen(!sidebarIsOpen)}
+                onClick={() => setSidebarIsOpen(sidebarIsOpen)}
               >
                 <i className="fas fa-bars"></i> All
               </Link>
@@ -146,7 +148,6 @@ function App() {
           </div>
         </Navbar>
       </header>
-
       {sidebarIsOpen && (
         <div
           onClick={() => setSidebarIsOpen(!sidebarIsOpen)}
@@ -173,7 +174,7 @@ function App() {
             </LinkContainer>
           </ListGroup.Item>
           <ListGroup.Item>
-            <div className="d-flex justify-content-between align-items-center">
+            <div>
               <strong>Categories</strong>
               <Button
                 variant={mode}
@@ -203,7 +204,6 @@ function App() {
           )}
         </ListGroup>
       </div>
-
       <main>
         <Container className="mt-3">
           <Outlet />

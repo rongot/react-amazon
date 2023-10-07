@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express"
+import express from "express"
 import asyncHandler from "express-async-handler"
 import { ProductModel } from "../models/productModel"
 
@@ -11,6 +11,14 @@ productRouter.get(
     res.json(products)
   })
 )
+
+productRouter.get(
+  "/categories",
+  asyncHandler(async (req, res) => {
+    const categories = await ProductModel.find().distinct("category")
+    res.json(categories)
+  })
+)
 //
 productRouter.get(
   "/:slug",
@@ -21,14 +29,5 @@ productRouter.get(
     } else {
       res.status(404).json({ message: "Product Not Found" })
     }
-  })
-)
-
-productRouter.get(
-  "/categories",
-  asyncHandler(async (req: Request, res: Response) => {
-    const categories = await ProductModel.find().distinct("category")
-    console.log(categories)
-    res.json(categories)
   })
 )
