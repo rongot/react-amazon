@@ -1,13 +1,11 @@
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 import "./index.css"
 // import { sampleProducts } from "./data/data"
 import { LinkContainer } from "react-router-bootstrap"
 import {
   Button,
   Container,
-  Form,
-  FormControl,
-  InputGroup,
+  ListGroup,
   Nav,
   NavDropdown,
   Navbar,
@@ -16,6 +14,12 @@ import { Link, Outlet } from "react-router-dom"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { Store } from "./Store"
+import { useGetCategoriesQuery } from "./contexts/productHooks"
+import SearchBox from "./components/SearchBox"
+import LoadingBox from "./components/LoadingBox"
+import MessageBox from "./components/MessageBox"
+import { getError } from "./utils"
+import { ApiError } from "./types/ApiError"
 
 function App() {
   //get from store
@@ -41,7 +45,9 @@ function App() {
     //redirect to /signin
     window.location.href = "/signin"
   }
-
+  const [sidebarIsOpen, setSidebarIsOpen] = useState(false)
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { data: categories, isLoading, error } = useGetCategoriesQuery()
   return (
     <div className="d-flex flex-column vh-100">
       <header>
@@ -56,25 +62,7 @@ function App() {
             <LinkContainer to="/" className="header-link">
               <Navbar.Brand>Ronen amazon</Navbar.Brand>
             </LinkContainer>
-            <Form className="flex-grow-1 d-flex me-auto">
-              <InputGroup>
-                <FormControl
-                  type="text"
-                  name="q"
-                  id="q"
-                  placeholder="Search RGamazon"
-                  aria-label="Search RGamazon"
-                  aria-describedby="button-search"
-                ></FormControl>
-                <Button
-                  variant="outline-primary"
-                  type="submit"
-                  id="button-search"
-                >
-                  <i className="fas fa-search"></i>
-                </Button>
-              </InputGroup>
-            </Form>
+            <SearchBox />
 
             <Navbar.Collapse>
               <Nav className="w-100 justify-content-end">
@@ -140,7 +128,11 @@ function App() {
           </div>
           <div className="sub-header">
             <div className="d-flex">
-              <Link to="#" className="nav-link header-link p-1">
+              <Link
+                to="#"
+                className="nav-link header-link p-1"
+                onClick={() => setSidebarIsOpen(sidebarIsOpen)}
+              >
                 <i className="fas fa-bars"></i> All
               </Link>
               {["Todays Deal", "Gifts", "On Sale"].map((x) => (
@@ -156,6 +148,62 @@ function App() {
           </div>
         </Navbar>
       </header>
+      {sidebarIsOpen && (
+        <div
+          onClick={() => setSidebarIsOpen(!sidebarIsOpen)}
+          className="side-navbar-backdrop"
+        ></div>
+      )}
+
+      <div
+        className={
+          sidebarIsOpen
+            ? "active-nav side-navbar d-flex justify-content-between flex-wrap flex-column"
+            : "side-navbar d-flex justify-content-between flex-wrap flex-column"
+        }
+      >
+        <ListGroup variant="flush">
+          <ListGroup.Item action className="side-navbar-user">
+            <LinkContainer
+              to={userInfo ? `/profile` : `/signin`}
+              onClick={() => setSidebarIsOpen(!sidebarIsOpen)}
+            >
+              <span>
+                {userInfo ? `Hello, ${userInfo.name}` : `Hello, sign in`}
+              </span>
+            </LinkContainer>
+          </ListGroup.Item>
+          <ListGroup.Item>
+            <div className="d-flex justify-content-between align-items-center">
+              <strong>Categories</strong>
+              <Button
+                variant={mode}
+                onClick={() => setSidebarIsOpen(!sidebarIsOpen)}
+              >
+                <i className="fa fa-times" />
+              </Button>
+            </div>
+          </ListGroup.Item>
+          {isLoading ? (
+            <LoadingBox />
+          ) : error ? (
+            <MessageBox variant="danger">
+              {getError(error as ApiError)}
+            </MessageBox>
+          ) : (
+            categories!.map((category) => (
+              <ListGroup.Item action key={category}>
+                <LinkContainer
+                  to={{ pathname: "/search", search: `category=${category}` }}
+                  onClick={() => setSidebarIsOpen(false)}
+                >
+                  <Nav.Link>{category}</Nav.Link>
+                </LinkContainer>
+              </ListGroup.Item>
+            ))
+          )}
+        </ListGroup>
+      </div>
       <main>
         <Container className="mt-3">
           <Outlet />
