@@ -31,3 +31,15 @@ productRouter.get(
     }
   })
 )
+
+productRouter.get(
+  "/search/:search",
+  asyncHandler(async (req, res) => {
+    const search = await ProductModel.findOne({ category: req.params.search })
+    if (search) {
+      res.json(search)
+    } else {
+      res.json({ message: `hi ${req.params.search} not found` })
+    }
+  })
+)

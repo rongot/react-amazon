@@ -26,6 +26,7 @@ import OrderPage from "./pages/OrderPage.tsx"
 import { PayPalScriptProvider } from "@paypal/react-paypal-js"
 import OrderHistoryPage from "./pages/OrderHistoryPage.tsx"
 import ProfilePage from "./pages/ProfilePage.tsx"
+import SearchPage from "./pages/SearchPage.tsx"
 // import axios from "axios"
 
 // axios.defaults.baseURL =
@@ -39,6 +40,7 @@ const router = createBrowserRouter(
       <Route path="/cart" element={<CartPage />} />
       <Route path="/signin" element={<SignInPage />} />
       <Route path="/signup" element={<SignupPage />} />
+      <Route path="/search" element={<SearchPage />} />
       <Route path="" element={<ProtectedRoute />}>
         <Route path="shipping" element={<ShippingAddressPage />} />
         <Route path="payment" element={<PaymentMethodPage />} />
