@@ -28,6 +28,7 @@ productRouter.get(
   "/categories",
   asyncHandler(async (req: Request, res: Response) => {
     const categories = await ProductModel.find().distinct("category")
+    console.log(categories)
     res.json(categories)
   })
 )
